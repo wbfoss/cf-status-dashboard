@@ -62,6 +62,55 @@ export default function StatusSummary({
   const isMinor = statusIndicator === 'minor'; // Partial outage level
   const isMajor = statusIndicator === 'major' || statusIndicator === 'critical'; // Major/Critical level
 
+  // Compute accurate status description based on actual component status
+  const computedStatus = (() => {
+    const allServicesUp = svcIssues === 0;
+    const dcIssues = dcPartialOutage + dcMajorOutage + dcDegraded;
+
+    // All operational
+    if (allServicesUp && dcIssues === 0 && dcMaintenance === 0) {
+      return { text: 'All Systems Operational', indicator: 'none' };
+    }
+
+    // Only maintenance, no outages
+    if (allServicesUp && dcIssues === 0 && dcMaintenance > 0) {
+      return { text: `Scheduled Maintenance (${dcMaintenance} DCs)`, indicator: 'none' };
+    }
+
+    // Services have issues - this is serious
+    if (!allServicesUp) {
+      if (isMajor) {
+        return { text: statusDescription, indicator: statusIndicator }; // Use API description for major issues
+      }
+      return { text: `Service Degradation (${svcIssues} affected)`, indicator: 'major' };
+    }
+
+    // All services up but DC issues exist
+    if (allServicesUp && dcIssues > 0) {
+      if (dcMajorOutage > 0) {
+        return { text: `Data Center Outages (${dcMajorOutage} major, ${dcPartialOutage} partial)`, indicator: 'major' };
+      }
+      if (dcPartialOutage > 0) {
+        const maintText = dcMaintenance > 0 ? ` + ${dcMaintenance} maintenance` : '';
+        return { text: `Partial DC Outages (${dcPartialOutage} affected${maintText})`, indicator: 'minor' };
+      }
+      if (dcDegraded > 0) {
+        return { text: `DC Performance Degraded (${dcDegraded} affected)`, indicator: 'minor' };
+      }
+    }
+
+    // Fallback to API description
+    return { text: statusDescription, indicator: statusIndicator };
+  })();
+
+  // Use computed status for display
+  const displayStatus = computedStatus.text;
+  const displayIndicator = computedStatus.indicator;
+
+  // Recalculate display flags based on computed indicator
+  const displayIsHealthy = displayIndicator === 'none';
+  const displayIsMinor = displayIndicator === 'minor';
+
   return (
     <div
       className="rounded-lg border overflow-hidden"
@@ -74,9 +123,9 @@ export default function StatusSummary({
       <div
         className="px-5 py-4 flex items-center gap-6"
         style={{
-          background: isHealthy
+          background: displayIsHealthy
             ? 'linear-gradient(135deg, rgba(63, 185, 80, 0.1) 0%, transparent 100%)' // Green for operational
-            : isMinor
+            : displayIsMinor
             ? 'linear-gradient(135deg, rgba(219, 109, 40, 0.1) 0%, transparent 100%)' // Orange for partial outage
             : 'linear-gradient(135deg, rgba(248, 81, 73, 0.1) 0%, transparent 100%)', // Red for major/critical
         }}
@@ -85,11 +134,11 @@ export default function StatusSummary({
         <div className="flex items-center gap-4">
           <div
             className={`w-12 h-12 rounded-full flex items-center justify-center ${
-              isHealthy ? 'pulse-operational' : isMinor ? 'pulse-partial' : 'pulse-outage'
+              displayIsHealthy ? 'pulse-operational' : displayIsMinor ? 'pulse-partial' : 'pulse-outage'
             }`}
-            style={{ backgroundColor: getStatusColor(statusIndicator) }}
+            style={{ backgroundColor: getStatusColor(displayIndicator) }}
           >
-            {isHealthy ? (
+            {displayIsHealthy ? (
               <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
               </svg>
@@ -100,8 +149,8 @@ export default function StatusSummary({
             )}
           </div>
           <div>
-            <div className="font-bold text-lg" style={{ color: getStatusColor(statusIndicator) }}>
-              {statusDescription}
+            <div className="font-bold text-lg" style={{ color: getStatusColor(displayIndicator) }}>
+              {displayStatus}
             </div>
             <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>
               Cloudflare Global Network
