@@ -25,7 +25,6 @@ interface DataCenterPoint {
   name: string;
   code: string;
   status: string;
-  size: number;
   color: string;
 }
 
@@ -46,15 +45,12 @@ export default function Globe3D({ components }: Globe3DProps) {
       const code = extractAirportCode(component.name);
 
       if (coords && code) {
-        const isOperational = component.status === 'operational';
         centers.push({
           lat: coords[1],
           lng: coords[0],
           name: component.name.replace(/ - \([A-Z]{3}\)$/, ''),
           code,
           status: component.status,
-          // Spike height: operational = shorter, issues = taller
-          size: isOperational ? 0.4 : 1.2,
           color: getStatusColorHex(component.status),
         });
       }
@@ -110,16 +106,27 @@ export default function Globe3D({ components }: Globe3DProps) {
     }
   }, [dimensions]);
 
-  // Point altitude accessor for spike height
-  const getPointAltitude = useCallback((d: object) => {
-    const dc = d as DataCenterPoint;
-    return dc.size;
-  }, []);
-
-  // Point color accessor
-  const getPointColor = useCallback((d: object) => {
+  // Label accessors
+  const getLabelColor = useCallback((d: object) => {
     const dc = d as DataCenterPoint;
     return dc.color;
+  }, []);
+
+  const getLabelSize = useCallback((d: object) => {
+    const dc = d as DataCenterPoint;
+    // Non-operational DCs get larger labels
+    return dc.status === 'operational' ? 0.5 : 1.0;
+  }, []);
+
+  const getLabelDotRadius = useCallback((d: object) => {
+    const dc = d as DataCenterPoint;
+    // Non-operational DCs get larger dots
+    return dc.status === 'operational' ? 0.3 : 0.6;
+  }, []);
+
+  const getLabelText = useCallback((d: object) => {
+    const dc = d as DataCenterPoint;
+    return dc.code;
   }, []);
 
   return (
@@ -135,16 +142,18 @@ export default function Globe3D({ components }: Globe3DProps) {
           // Atmosphere
           atmosphereColor="#3a86ff"
           atmosphereAltitude={0.15}
-          // Points layer - creates spikes from surface
-          pointsData={dataCenters}
-          pointLat="lat"
-          pointLng="lng"
-          pointAltitude={getPointAltitude}
-          pointColor={getPointColor}
-          pointRadius={0.12}
-          pointsMerge={false}
-          pointResolution={6}
-          onPointHover={(point: object | null) => setHoveredPoint(point as DataCenterPoint | null)}
+          // Labels layer - creates dots with text labels
+          labelsData={dataCenters}
+          labelLat="lat"
+          labelLng="lng"
+          labelText={getLabelText}
+          labelSize={getLabelSize}
+          labelDotRadius={getLabelDotRadius}
+          labelColor={getLabelColor}
+          labelResolution={2}
+          labelAltitude={0.01}
+          labelDotOrientation={() => 'bottom'}
+          onLabelHover={(label: object | null) => setHoveredPoint(label as DataCenterPoint | null)}
         />
       )}
 
