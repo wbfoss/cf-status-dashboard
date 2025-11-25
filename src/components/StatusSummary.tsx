@@ -50,10 +50,17 @@ export default function StatusSummary({
     ['scheduled', 'in_progress', 'verifying'].includes(m.status)
   ).length;
 
-  // Overall health percentage (based on data centers)
-  const healthPercent = dcTotal > 0 ? Math.round((dcOperational / dcTotal) * 100) : 100;
+  // Overall health percentage (based on data centers with weighted severity)
+  // Operational = 100%, Degraded = 75%, Partial Outage = 50%, Major Outage = 0%, Maintenance = 100% (planned)
+  const healthScore = dcTotal > 0
+    ? (dcOperational * 100 + dcDegraded * 75 + dcPartialOutage * 50 + dcMajorOutage * 0 + dcMaintenance * 100) / dcTotal
+    : 100;
+  const healthPercent = Math.round(healthScore);
 
+  // Determine overall status level
   const isHealthy = statusIndicator === 'none';
+  const isMinor = statusIndicator === 'minor'; // Partial outage level
+  const isMajor = statusIndicator === 'major' || statusIndicator === 'critical'; // Major/Critical level
 
   return (
     <div
@@ -68,14 +75,18 @@ export default function StatusSummary({
         className="px-5 py-4 flex items-center gap-6"
         style={{
           background: isHealthy
-            ? 'linear-gradient(135deg, rgba(63, 185, 80, 0.1) 0%, transparent 100%)'
-            : 'linear-gradient(135deg, rgba(248, 81, 73, 0.1) 0%, transparent 100%)',
+            ? 'linear-gradient(135deg, rgba(63, 185, 80, 0.1) 0%, transparent 100%)' // Green for operational
+            : isMinor
+            ? 'linear-gradient(135deg, rgba(219, 109, 40, 0.1) 0%, transparent 100%)' // Orange for partial outage
+            : 'linear-gradient(135deg, rgba(248, 81, 73, 0.1) 0%, transparent 100%)', // Red for major/critical
         }}
       >
         {/* Status Indicator */}
         <div className="flex items-center gap-4">
           <div
-            className={`w-12 h-12 rounded-full flex items-center justify-center ${isHealthy ? 'pulse-operational' : 'pulse-outage'}`}
+            className={`w-12 h-12 rounded-full flex items-center justify-center ${
+              isHealthy ? 'pulse-operational' : isMinor ? 'pulse-partial' : 'pulse-outage'
+            }`}
             style={{ backgroundColor: getStatusColor(statusIndicator) }}
           >
             {isHealthy ? (
@@ -106,7 +117,15 @@ export default function StatusSummary({
           <QuickStat
             label="Network Health"
             value={`${healthPercent}%`}
-            color={healthPercent >= 95 ? 'var(--noc-operational)' : healthPercent >= 80 ? 'var(--noc-degraded)' : 'var(--noc-major)'}
+            color={
+              healthPercent >= 95
+                ? 'var(--noc-operational)' // Green: 95-100%
+                : healthPercent >= 85
+                ? 'var(--noc-degraded)' // Yellow: 85-94%
+                : healthPercent >= 70
+                ? 'var(--noc-partial)' // Orange: 70-84%
+                : 'var(--noc-major)' // Red: below 70%
+            }
           />
           <Link href="/datacenters" className="group">
             <QuickStat

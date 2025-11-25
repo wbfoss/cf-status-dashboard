@@ -35,13 +35,13 @@ export function getStatusColor(status: string): string {
     case 'none':
       return 'var(--noc-operational)';
     case 'degraded_performance':
-    case 'minor':
       return 'var(--noc-degraded)';
     case 'partial_outage':
+    case 'minor': // API "Minor Service Outage" = partial outage
       return 'var(--noc-partial)';
     case 'major_outage':
-    case 'major':
-    case 'critical':
+    case 'major': // API "Partial System Outage" = major issues
+    case 'critical': // API "Major System Outage" = critical
       return 'var(--noc-major)';
     case 'under_maintenance':
       return 'var(--noc-maintenance)';
@@ -56,13 +56,13 @@ export function getStatusBgColor(status: string): string {
     case 'none':
       return 'var(--noc-operational-bg)';
     case 'degraded_performance':
-    case 'minor':
       return 'var(--noc-degraded-bg)';
     case 'partial_outage':
+    case 'minor': // API "Minor Service Outage" = partial outage
       return 'var(--noc-partial-bg)';
     case 'major_outage':
-    case 'major':
-    case 'critical':
+    case 'major': // API "Partial System Outage" = major issues
+    case 'critical': // API "Major System Outage" = critical
       return 'var(--noc-major-bg)';
     case 'under_maintenance':
       return 'var(--noc-maintenance-bg)';
