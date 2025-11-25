@@ -1,6 +1,8 @@
 # Cloudflare Status Dashboard
 
-A real-time, NOC-style status dashboard for monitoring Cloudflare's global infrastructure. Built with Next.js and designed for network operations centers, IT teams, and anyone who needs to keep an eye on Cloudflare's service health.
+A real-time*, NOC-style status dashboard for monitoring Cloudflare's global infrastructure. Built with Next.js and designed for network operations centers, IT teams, and anyone who needs to keep an eye on Cloudflare's service health.
+
+> *Real-time updates occur every 30 minutes via auto-refresh.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
@@ -10,8 +12,8 @@ A real-time, NOC-style status dashboard for monitoring Cloudflare's global infra
 
 ## Features
 
-### Real-Time Monitoring
-- **Live Status Updates** - Auto-refreshes every hour with manual refresh option
+### Real-Time* Monitoring
+- **Live Status Updates** - Auto-refreshes every 30 minutes
 - **343+ Data Centers** - Complete coverage of Cloudflare's global network
 - **110+ Core Services** - Monitor all Cloudflare products and services
 
@@ -23,7 +25,7 @@ A real-time, NOC-style status dashboard for monitoring Cloudflare's global infra
 
 ### Status Overview
 - **Network Health Percentage** - At-a-glance health metric
-- **Active Incidents** - Real-time incident tracking
+- **Active Incidents** - Real-time* incident tracking
 - **Scheduled Maintenance** - Upcoming maintenance windows
 - **Status Breakdown** - Visual progress bar showing operational vs affected
 
@@ -147,7 +149,7 @@ No environment variables required! The dashboard fetches data directly from Clou
 
 **Refresh Interval** - Edit `src/lib/api.ts`:
 ```typescript
-const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour (in milliseconds)
+const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes (in milliseconds)
 ```
 
 **Theme Colors** - Edit `src/app/globals.css`:
