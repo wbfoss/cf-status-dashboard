@@ -57,10 +57,10 @@ export default function Header({ lastUpdated, isLoading }: HeaderProps) {
               </div>
               <div>
                 <h1 className="text-lg font-bold" style={{ color: 'var(--noc-text-primary)' }}>
-                  Cloudflare Status
+                  Cloudflare Status Dashboard
                 </h1>
                 <p className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>
-                  Infrastructure Monitor
+                  visualising cloudflarestatus.com data
                 </p>
               </div>
             </div>
