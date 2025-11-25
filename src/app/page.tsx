@@ -72,7 +72,6 @@ export default function Dashboard() {
       <Header
         lastUpdated={data?.page?.updated_at || null}
         isLoading={isLoading}
-        onRefresh={() => refresh()}
       />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-5">
@@ -121,7 +120,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-4">
               <span className="italic">Not affiliated with Cloudflare, Inc.</span>
               <span className="hidden sm:inline">•</span>
-              <span>Auto-refresh: 1hr</span>
+              <span>Auto-refresh: 30m</span>
             </div>
           </div>
         </div>
