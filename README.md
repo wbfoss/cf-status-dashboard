@@ -188,9 +188,9 @@ npm run build
 
 ## Roadmap
 
-- [ ] Custom status page embedding
-- [ ] Multi-provider support (AWS, GCP, Azure)
-- [ ] Localization (i18n)
+- [ ] Historical uptime charts
+- [ ] Email/Slack notifications
+- [ ] PWA support for mobile
 
 ## License
 
