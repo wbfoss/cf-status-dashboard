@@ -213,10 +213,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Data provided by [Cloudflare Status](https://www.cloudflarestatus.com)
-- Built with [Next.js](https://nextjs.org)
-- Maps powered by [react-simple-maps](https://www.react-simple-maps.io)
-- Icons from [Heroicons](https://heroicons.com)
+This dashboard visualizes data from [cloudflarestatus.com](https://www.cloudflarestatus.com) APIs in a NOC-style interface. As fans of Cloudflare and their incredible global infrastructure, we built this as a simple way to monitor their network status.
+
+Thank you to [Cloudflare](https://cloudflare.com) for providing public status APIs and for building an amazing platform that powers so much of the internet.
+
+### Built With
+
+- [Next.js](https://nextjs.org) - React framework
+- [react-simple-maps](https://www.react-simple-maps.io) - Interactive maps
+- [Heroicons](https://heroicons.com) - Icons
 
 ## Support
 
