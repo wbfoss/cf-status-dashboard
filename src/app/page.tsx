@@ -118,7 +118,7 @@ export default function Dashboard() {
               </span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="italic">Not affiliated with Cloudflare, Inc.</span>
+              <span className="italic">Not affiliated with <a href="https://cloudflare.com" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--noc-accent)' }}>Cloudflare, Inc.</a></span>
               <span className="hidden sm:inline">•</span>
               <span>Auto-refresh: 30m</span>
             </div>
