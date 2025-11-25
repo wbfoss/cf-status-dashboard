@@ -165,11 +165,12 @@ export default function WorldMap({ components }: WorldMapProps) {
 
   // Count by status (for filtered)
   const statusCounts = useMemo(() => {
-    const counts = { operational: 0, degraded: 0, outage: 0, maintenance: 0 };
+    const counts = { operational: 0, degraded: 0, partialOutage: 0, majorOutage: 0, maintenance: 0 };
     filteredDataCenters.forEach((dc) => {
       if (dc.status === 'operational') counts.operational++;
       else if (dc.status === 'degraded_performance') counts.degraded++;
-      else if (dc.status === 'partial_outage' || dc.status === 'major_outage') counts.outage++;
+      else if (dc.status === 'partial_outage') counts.partialOutage++;
+      else if (dc.status === 'major_outage') counts.majorOutage++;
       else if (dc.status === 'under_maintenance') counts.maintenance++;
     });
     return counts;
@@ -231,10 +232,11 @@ export default function WorldMap({ components }: WorldMapProps) {
           <h3 className="font-semibold text-sm" style={{ color: 'var(--noc-text-primary)' }}>
             Global Network
           </h3>
-          <div className="flex items-center gap-3 text-xs">
+          <div className="flex items-center gap-3 text-xs flex-wrap">
             <LegendItem color="var(--noc-operational)" label="Operational" count={statusCounts.operational} />
             {statusCounts.degraded > 0 && <LegendItem color="var(--noc-degraded)" label="Degraded" count={statusCounts.degraded} />}
-            {statusCounts.outage > 0 && <LegendItem color="var(--noc-major)" label="Outage" count={statusCounts.outage} />}
+            {statusCounts.partialOutage > 0 && <LegendItem color="var(--noc-partial)" label="Partial Outage" count={statusCounts.partialOutage} />}
+            {statusCounts.majorOutage > 0 && <LegendItem color="var(--noc-major)" label="Major Outage" count={statusCounts.majorOutage} />}
             {statusCounts.maintenance > 0 && <LegendItem color="var(--noc-maintenance)" label="Maintenance" count={statusCounts.maintenance} />}
           </div>
         </div>

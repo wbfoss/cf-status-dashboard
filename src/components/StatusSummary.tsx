@@ -30,7 +30,8 @@ export default function StatusSummary({
   // Data center stats
   const dcOperational = dataCenters.filter(c => c.status === 'operational').length;
   const dcDegraded = dataCenters.filter(c => c.status === 'degraded_performance').length;
-  const dcOutage = dataCenters.filter(c => c.status === 'partial_outage' || c.status === 'major_outage').length;
+  const dcPartialOutage = dataCenters.filter(c => c.status === 'partial_outage').length;
+  const dcMajorOutage = dataCenters.filter(c => c.status === 'major_outage').length;
   const dcMaintenance = dataCenters.filter(c => c.status === 'under_maintenance').length;
   const dcTotal = dataCenters.length;
 
@@ -199,11 +200,20 @@ export default function StatusSummary({
                 }}
               />
             )}
-            {dcOutage > 0 && (
+            {dcPartialOutage > 0 && (
               <div
                 className="h-full"
                 style={{
-                  width: `${(dcOutage / dcTotal) * 100}%`,
+                  width: `${(dcPartialOutage / dcTotal) * 100}%`,
+                  backgroundColor: 'var(--noc-partial)',
+                }}
+              />
+            )}
+            {dcMajorOutage > 0 && (
+              <div
+                className="h-full"
+                style={{
+                  width: `${(dcMajorOutage / dcTotal) * 100}%`,
                   backgroundColor: 'var(--noc-major)',
                 }}
               />
@@ -221,10 +231,11 @@ export default function StatusSummary({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-4 text-xs flex-wrap">
           <LegendItem color="var(--noc-operational)" label="Operational" value={dcOperational} />
           {dcDegraded > 0 && <LegendItem color="var(--noc-degraded)" label="Degraded" value={dcDegraded} />}
-          {dcOutage > 0 && <LegendItem color="var(--noc-major)" label="Outage" value={dcOutage} />}
+          {dcPartialOutage > 0 && <LegendItem color="var(--noc-partial)" label="Partial Outage" value={dcPartialOutage} />}
+          {dcMajorOutage > 0 && <LegendItem color="var(--noc-major)" label="Major Outage" value={dcMajorOutage} />}
           {dcMaintenance > 0 && <LegendItem color="var(--noc-maintenance)" label="Maintenance" value={dcMaintenance} />}
         </div>
       </div>
