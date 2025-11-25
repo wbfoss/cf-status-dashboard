@@ -50,11 +50,6 @@ export default function StatusSummary({
     ['scheduled', 'in_progress', 'verifying'].includes(m.status)
   ).length;
 
-  // Overall health percentage (based on data centers)
-  // Simple calculation: Operational DCs / Total active DCs (excluding planned maintenance)
-  const activeDCs = dcTotal - dcMaintenance; // DCs that should be operational
-  const healthPercent = activeDCs > 0 ? Math.round((dcOperational / activeDCs) * 100) : 100;
-
   // Determine overall status level
   const isHealthy = statusIndicator === 'none';
   const isMinor = statusIndicator === 'minor'; // Partial outage level
@@ -160,20 +155,7 @@ export default function StatusSummary({
         <div className="h-10 w-px hidden md:block" style={{ backgroundColor: 'var(--noc-border)' }} />
 
         {/* Quick Stats */}
-        <div className="flex-1 hidden md:grid grid-cols-4 gap-4">
-          <QuickStat
-            label="Network Health"
-            value={`${healthPercent}%`}
-            color={
-              healthPercent >= 95
-                ? 'var(--noc-operational)' // Green: 95-100%
-                : healthPercent >= 85
-                ? 'var(--noc-degraded)' // Yellow: 85-94%
-                : healthPercent >= 70
-                ? 'var(--noc-partial)' // Orange: 70-84%
-                : 'var(--noc-major)' // Red: below 70%
-            }
-          />
+        <div className="flex-1 hidden md:grid grid-cols-3 gap-4">
           <Link href="/datacenters" className="group">
             <QuickStat
               label="Data Centers"
@@ -297,37 +279,19 @@ export default function StatusSummary({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
-          {/* Only show services card if no issues (otherwise shown above prominently) */}
-          {svcIssues === 0 ? (
-            <Link
-              href="/services"
-              className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
-              style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
-            >
-              <div>
-                <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Core Services</div>
-                <div className="text-lg font-bold" style={{ color: 'var(--noc-operational)' }}>{svcOperational}/{svcTotal}</div>
-              </div>
-              <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          ) : (
-            /* Show network health instead when services have issues */
-            <div
-              className="flex items-center justify-between p-3 rounded-lg border"
-              style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
-            >
-              <div>
-                <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Network Health</div>
-                <div className="text-lg font-bold" style={{
-                  color: healthPercent >= 95 ? 'var(--noc-operational)' :
-                    healthPercent >= 85 ? 'var(--noc-degraded)' :
-                    healthPercent >= 70 ? 'var(--noc-partial)' : 'var(--noc-major)'
-                }}>{healthPercent}%</div>
-              </div>
+          <Link
+            href="/services"
+            className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
+            style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+          >
+            <div>
+              <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Core Services</div>
+              <div className="text-lg font-bold" style={{ color: svcIssues > 0 ? 'var(--noc-major)' : 'var(--noc-operational)' }}>{svcOperational}/{svcTotal}</div>
             </div>
-          )}
+            <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
 
         {/* Show incidents count when no active incidents (for context) */}
