@@ -11,21 +11,26 @@ const fetcher = async (url: string) => {
 };
 
 export function useCloudflareStatus() {
-  const { data, error, isLoading, mutate } = useSWR<SummaryResponse>(
+  const { data, error, isLoading, isValidating, mutate } = useSWR<SummaryResponse>(
     `${API_BASE}/summary.json`,
     fetcher,
     {
       refreshInterval: REFRESH_INTERVAL,
       revalidateOnFocus: true,
-      dedupingInterval: 30000,
+      dedupingInterval: 5000, // Reduced to allow more frequent manual refreshes
     }
   );
 
+  // Manual refresh function that forces revalidation
+  const refresh = async () => {
+    await mutate(undefined, { revalidate: true });
+  };
+
   return {
     data,
-    isLoading,
+    isLoading: isLoading || isValidating, // Show loading during both initial load and revalidation
     isError: error,
-    refresh: mutate,
+    refresh,
   };
 }
 
