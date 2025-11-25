@@ -8,3 +8,4 @@ export { default as ComponentsGrid } from './ComponentsGrid';
 export { default as IncidentsPanel } from './IncidentsPanel';
 export { default as MaintenancePanel } from './MaintenancePanel';
 export { default as AboutSection } from './AboutSection';
+export { default as ShareToolbar } from './ShareToolbar';

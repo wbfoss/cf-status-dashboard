@@ -40,6 +40,10 @@ const AboutSection = dynamic(() => import('@/components/AboutSection'), {
   ssr: false,
 });
 
+const ShareToolbar = dynamic(() => import('@/components/ShareToolbar'), {
+  ssr: false,
+});
+
 type ViewMode = 'globe' | 'map';
 
 export default function Dashboard() {
@@ -160,6 +164,9 @@ export default function Dashboard() {
 
         {/* About Section */}
         <AboutSection />
+
+        {/* Share Toolbar */}
+        <ShareToolbar />
       </main>
 
       {/* Footer */}
