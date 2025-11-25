@@ -190,6 +190,7 @@ export default function StatusSummary({
               sublabel={svcIssues > 0 ? `${svcIssues} issue${svcIssues > 1 ? 's' : ''}` : 'all operational'}
               color={svcIssues > 0 ? 'var(--noc-major)' : 'var(--noc-operational)'}
               clickable
+              highlighted={svcIssues > 0}
             />
           </Link>
           <QuickStat
@@ -197,41 +198,166 @@ export default function StatusSummary({
             value={activeIncidents}
             sublabel={activeMaintenance > 0 ? `+${activeMaintenance} maintenance` : 'monitoring'}
             color={activeIncidents > 0 ? 'var(--noc-major)' : 'var(--noc-operational)'}
+            highlighted={activeIncidents > 0}
           />
         </div>
       </div>
 
       {/* Mobile Stats Links */}
       <div
-        className="md:hidden px-5 py-3 border-t grid grid-cols-2 gap-3"
+        className="md:hidden px-5 py-3 border-t flex flex-col gap-3"
         style={{ borderColor: 'var(--noc-border)', backgroundColor: 'var(--noc-bg-secondary)' }}
       >
-        <Link
-          href="/datacenters"
-          className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
-          style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
-        >
-          <div>
-            <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Data Centers</div>
-            <div className="text-lg font-bold" style={{ color: 'var(--noc-operational)' }}>{dcOperational}/{dcTotal}</div>
+        {/* Active Incidents - Always shown first on mobile when there are incidents */}
+        {activeIncidents > 0 && (
+          <div
+            className="p-3 rounded-lg border-2 pulse-outage"
+            style={{
+              backgroundColor: 'var(--noc-major-bg)',
+              borderColor: 'var(--noc-major)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--noc-major)' }}
+                >
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--noc-major)' }}>
+                    Active Incidents
+                  </div>
+                  <div className="text-2xl font-bold" style={{ color: 'var(--noc-major)' }}>
+                    {activeIncidents}
+                  </div>
+                </div>
+              </div>
+              {activeMaintenance > 0 && (
+                <div className="text-right">
+                  <div className="text-[10px]" style={{ color: 'var(--noc-text-muted)' }}>+ maintenance</div>
+                  <div className="text-lg font-bold" style={{ color: 'var(--noc-maintenance)' }}>{activeMaintenance}</div>
+                </div>
+              )}
+            </div>
           </div>
-          <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-        <Link
-          href="/services"
-          className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
-          style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
-        >
-          <div>
-            <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Core Services</div>
-            <div className="text-lg font-bold" style={{ color: svcIssues > 0 ? 'var(--noc-major)' : 'var(--noc-operational)' }}>{svcOperational}/{svcTotal}</div>
+        )}
+
+        {/* Core Services Alert - Show prominently when there are issues */}
+        {svcIssues > 0 && (
+          <Link
+            href="/services"
+            className="p-3 rounded-lg border-2 pulse-outage"
+            style={{
+              backgroundColor: 'var(--noc-major-bg)',
+              borderColor: 'var(--noc-major)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: 'var(--noc-major)' }}
+                >
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--noc-major)' }}>
+                    Service Outage
+                  </div>
+                  <div className="text-lg font-bold" style={{ color: 'var(--noc-major)' }}>
+                    {svcIssues} service{svcIssues > 1 ? 's' : ''} affected
+                  </div>
+                </div>
+              </div>
+              <svg className="w-5 h-5" style={{ color: 'var(--noc-major)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </Link>
+        )}
+
+        {/* Regular stats grid */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            href="/datacenters"
+            className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
+            style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+          >
+            <div>
+              <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Data Centers</div>
+              <div className="text-lg font-bold" style={{ color: 'var(--noc-operational)' }}>{dcOperational}/{dcTotal}</div>
+            </div>
+            <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          {/* Only show services card if no issues (otherwise shown above prominently) */}
+          {svcIssues === 0 ? (
+            <Link
+              href="/services"
+              className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
+              style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+            >
+              <div>
+                <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Core Services</div>
+                <div className="text-lg font-bold" style={{ color: 'var(--noc-operational)' }}>{svcOperational}/{svcTotal}</div>
+              </div>
+              <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          ) : (
+            /* Show network health instead when services have issues */
+            <div
+              className="flex items-center justify-between p-3 rounded-lg border"
+              style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+            >
+              <div>
+                <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Network Health</div>
+                <div className="text-lg font-bold" style={{
+                  color: healthPercent >= 95 ? 'var(--noc-operational)' :
+                    healthPercent >= 85 ? 'var(--noc-degraded)' :
+                    healthPercent >= 70 ? 'var(--noc-partial)' : 'var(--noc-major)'
+                }}>{healthPercent}%</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Show incidents count when no active incidents (for context) */}
+        {activeIncidents === 0 && (
+          <div
+            className="p-3 rounded-lg border flex items-center justify-between"
+            style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+          >
+            <div className="flex items-center gap-2">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'var(--noc-operational-bg)' }}
+              >
+                <svg className="w-4 h-4" style={{ color: 'var(--noc-operational)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Active Incidents</div>
+                <div className="text-sm font-semibold" style={{ color: 'var(--noc-operational)' }}>None</div>
+              </div>
+            </div>
+            {activeMaintenance > 0 && (
+              <div className="text-right">
+                <div className="text-[10px]" style={{ color: 'var(--noc-text-muted)' }}>Maintenance</div>
+                <div className="text-sm font-semibold" style={{ color: 'var(--noc-maintenance)' }}>{activeMaintenance}</div>
+              </div>
+            )}
           </div>
-          <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
+        )}
       </div>
 
       {/* Status Breakdown Bar */}
@@ -315,16 +441,34 @@ function QuickStat({
   sublabel,
   color,
   clickable,
+  highlighted,
 }: {
   label: string;
   value: string | number;
   sublabel?: string;
   color: string;
   clickable?: boolean;
+  highlighted?: boolean;
 }) {
   return (
-    <div className={clickable ? 'group-hover:opacity-80 transition-opacity' : ''}>
-      <div className="text-[10px] uppercase tracking-wider mb-0.5 flex items-center gap-1" style={{ color: 'var(--noc-text-muted)' }}>
+    <div
+      className={`${clickable ? 'group-hover:opacity-80 transition-opacity' : ''} ${
+        highlighted ? 'px-3 py-2 rounded-lg pulse-outage' : ''
+      }`}
+      style={highlighted ? {
+        backgroundColor: 'var(--noc-major-bg)',
+        border: '1px solid var(--noc-major)',
+      } : undefined}
+    >
+      <div
+        className="text-[10px] uppercase tracking-wider mb-0.5 flex items-center gap-1"
+        style={{ color: highlighted ? color : 'var(--noc-text-muted)' }}
+      >
+        {highlighted && (
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01" />
+          </svg>
+        )}
         {label}
         {clickable && (
           <svg className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -336,7 +480,7 @@ function QuickStat({
         {value}
       </div>
       {sublabel && (
-        <div className="text-[10px]" style={{ color: 'var(--noc-text-muted)' }}>
+        <div className="text-[10px]" style={{ color: highlighted ? color : 'var(--noc-text-muted)' }}>
           {sublabel}
         </div>
       )}
