@@ -64,13 +64,15 @@ export default function Globe3D({ components }: Globe3DProps) {
     return centers;
   }, [components]);
 
-  // Status counts
+  // Status counts - matching WorldMap categories
   const statusCounts = useMemo(() => {
-    const counts = { operational: 0, issues: 0, maintenance: 0 };
+    const counts = { operational: 0, degraded: 0, partialOutage: 0, majorOutage: 0, maintenance: 0 };
     dataCenters.forEach((dc) => {
       if (dc.status === 'operational') counts.operational++;
+      else if (dc.status === 'degraded_performance') counts.degraded++;
+      else if (dc.status === 'partial_outage') counts.partialOutage++;
+      else if (dc.status === 'major_outage') counts.majorOutage++;
       else if (dc.status === 'under_maintenance') counts.maintenance++;
-      else counts.issues++;
     });
     return counts;
   }, [dataCenters]);
@@ -170,11 +172,17 @@ export default function Globe3D({ components }: Globe3DProps) {
         </h3>
         <div className="space-y-2 text-xs">
           <LegendItem color="#3fb950" label="Operational" count={statusCounts.operational} />
-          {statusCounts.issues > 0 && (
-            <LegendItem color="#f85149" label="Issues" count={statusCounts.issues} />
+          {statusCounts.degraded > 0 && (
+            <LegendItem color="#d29922" label="Degraded" count={statusCounts.degraded} />
+          )}
+          {statusCounts.partialOutage > 0 && (
+            <LegendItem color="#db6d28" label="Partial Outage" count={statusCounts.partialOutage} />
+          )}
+          {statusCounts.majorOutage > 0 && (
+            <LegendItem color="#f85149" label="Major Outage" count={statusCounts.majorOutage} />
           )}
           {statusCounts.maintenance > 0 && (
-            <LegendItem color="#6e40c9" label="Maintenance" count={statusCounts.maintenance} />
+            <LegendItem color="#58a6ff" label="Maintenance" count={statusCounts.maintenance} />
           )}
         </div>
         <div className="mt-3 pt-3 border-t text-[10px]" style={{ borderColor: 'var(--noc-border)', color: 'var(--noc-text-muted)' }}>
@@ -235,18 +243,19 @@ function LegendItem({ color, label, count }: { color: string; label: string; cou
   );
 }
 
+// Hex colors matching CSS variables in globals.css
 function getStatusColorHex(status: string): string {
   switch (status) {
     case 'operational':
-      return '#3fb950';
+      return '#3fb950';  // --noc-operational
     case 'degraded_performance':
-      return '#d29922';
+      return '#d29922';  // --noc-degraded
     case 'partial_outage':
-      return '#db6d28';
+      return '#db6d28';  // --noc-partial
     case 'major_outage':
-      return '#f85149';
+      return '#f85149';  // --noc-major
     case 'under_maintenance':
-      return '#6e40c9';
+      return '#58a6ff';  // --noc-maintenance
     default:
       return '#8b949e';
   }
