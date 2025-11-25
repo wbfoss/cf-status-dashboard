@@ -81,23 +81,14 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: "Cloudflare Status Dashboard | Real-Time Global Network Monitor",
     description:
-      "Monitor Cloudflare's global infrastructure in real-time with interactive world map, 300+ data center status, and incident tracking.",
+      "Real-time 3D globe visualization of 330+ Cloudflare data centers. Monitor status, incidents, and maintenance schedules.",
     siteName: "Cloudflare Status Dashboard",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Cloudflare Status Dashboard - Real-time NOC monitoring",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Cloudflare Status Dashboard | Real-Time Monitor",
     description:
-      "Monitor Cloudflare's global infrastructure in real-time with interactive world map and incident tracking.",
-    images: ["/og-image.png"],
+      "Real-time 3D globe visualization of 330+ Cloudflare data centers worldwide.",
     creator: "@wbfoss",
   },
   category: "technology",
@@ -133,7 +124,8 @@ const jsonLd = {
   softwareVersion: "1.0.0",
   featureList: [
     "Real-time Cloudflare status monitoring",
-    "Interactive world map with data center locations",
+    "Interactive 3D globe with 330+ data center locations",
+    "2D world map view option",
     "Incident tracking and history",
     "Maintenance schedule notifications",
     "Mobile responsive design",
