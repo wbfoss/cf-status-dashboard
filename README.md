@@ -37,6 +37,14 @@ A real-time, NOC-style status dashboard for monitoring Cloudflare's global infra
 - **Mobile Responsive** - Works on desktop, tablet, and mobile
 - **Accessibility** - Keyboard navigable with screen reader support
 
+## One-Click Deploy
+
+Deploy your own Cloudflare Status Dashboard in seconds:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fwbfoss%2Fcf-status-dashboard&project-name=cloudflare-status-dashboard&repository-name=cf-status-dashboard&demo-title=Cloudflare%20Status%20Dashboard&demo-description=Real-time%20NOC-style%20dashboard%20for%20monitoring%20Cloudflare%20infrastructure&demo-url=https%3A%2F%2Fcf-status-dashboard.vercel.app)
+
+**No configuration required!** The dashboard works out of the box - just click deploy and you're done.
+
 ## Quick Start
 
 ### Prerequisites
@@ -75,7 +83,12 @@ npm start
 
 ### Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/wbfoss/cf-status-dashboard)
+Use the [One-Click Deploy](#one-click-deploy) button above, or deploy manually:
+
+```bash
+npm i -g vercel
+vercel
+```
 
 ### Docker
 
