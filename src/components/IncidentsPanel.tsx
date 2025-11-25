@@ -1,7 +1,7 @@
 'use client';
 
 import { Incident } from '@/lib/types';
-import { getStatusColor, getStatusBgColor, getStatusLabel, getRelativeTime } from '@/lib/api';
+import { getStatusColor, getStatusBgColor, getStatusLabel, getRelativeTime, formatDateTime } from '@/lib/api';
 
 interface IncidentsPanelProps {
   incidents: Incident[];
@@ -105,9 +105,13 @@ function IncidentCard({ incident }: { incident: Incident }) {
       )}
 
       <div className="flex items-center justify-between text-[10px]" style={{ color: 'var(--noc-text-muted)' }}>
-        <span>{getRelativeTime(incident.created_at)}</span>
+        <div className="flex items-center gap-2">
+          <span>{getRelativeTime(incident.created_at)}</span>
+          <span>•</span>
+          <span>{formatDateTime(incident.created_at)}</span>
+        </div>
         {incident.components.length > 0 && (
-          <span>{incident.components.length} affected</span>
+          <span className="shrink-0">{incident.components.length} affected</span>
         )}
       </div>
     </div>
