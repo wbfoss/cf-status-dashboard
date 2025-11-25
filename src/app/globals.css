@@ -110,6 +110,42 @@ body {
   background-size: 50px 50px;
 }
 
+/* Map marker pulse animations */
+@keyframes map-pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes map-pulse-inner {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.15);
+  }
+}
+
+.map-marker-pulse {
+  animation: map-pulse 2s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+.map-marker-pulse-inner {
+  animation: map-pulse-inner 2s ease-in-out infinite;
+  animation-delay: 0.3s;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
 /* Mobile optimizations */
 @media (max-width: 640px) {
   /* Reduce grid pattern on mobile for performance */
@@ -127,7 +163,9 @@ body {
   .pulse-operational,
   .pulse-degraded,
   .pulse-partial,
-  .pulse-outage {
+  .pulse-outage,
+  .map-marker-pulse,
+  .map-marker-pulse-inner {
     animation: none;
   }
 }
@@ -137,7 +175,9 @@ body {
   .pulse-operational,
   .pulse-degraded,
   .pulse-partial,
-  .pulse-outage {
+  .pulse-outage,
+  .map-marker-pulse,
+  .map-marker-pulse-inner {
     animation: none;
   }
 

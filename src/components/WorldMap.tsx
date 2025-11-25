@@ -331,7 +331,7 @@ export default function WorldMap({ components }: WorldMapProps) {
                 </Marker>
               ))}
 
-            {/* Render non-operational markers on top with glow effect */}
+            {/* Render non-operational markers on top with animated glow effect */}
             {filteredDataCenters
               .filter(dc => dc.status !== 'operational')
               .map((dc) => (
@@ -341,16 +341,19 @@ export default function WorldMap({ components }: WorldMapProps) {
                   onMouseEnter={() => setTooltip(dc)}
                   onMouseLeave={() => setTooltip(null)}
                 >
-                  {/* Glow effect */}
+                  {/* Animated outer glow */}
                   <circle
                     r={getMarkerSize(dc.status) * 2.5}
                     fill={getStatusColor(dc.status)}
                     fillOpacity={0.2}
+                    className="map-marker-pulse"
                   />
+                  {/* Animated inner glow */}
                   <circle
                     r={getMarkerSize(dc.status) * 1.5}
                     fill={getStatusColor(dc.status)}
                     fillOpacity={0.3}
+                    className="map-marker-pulse-inner"
                   />
                   {/* Main marker */}
                   <circle
