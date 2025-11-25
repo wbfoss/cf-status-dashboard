@@ -1,13 +1,34 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useCloudflareStatus } from '@/lib/api';
+import { Header } from '@/components';
 import {
-  Header,
-  StatusSummary,
-  WorldMap,
-  IncidentsPanel,
-  MaintenancePanel,
-} from '@/components';
+  StatusSummarySkeleton,
+  MapSkeleton,
+  PanelSkeleton,
+} from '@/components/Skeleton';
+
+// Lazy load heavy components
+const StatusSummary = dynamic(() => import('@/components/StatusSummary'), {
+  loading: () => <StatusSummarySkeleton />,
+  ssr: false,
+});
+
+const WorldMap = dynamic(() => import('@/components/WorldMap'), {
+  loading: () => <MapSkeleton />,
+  ssr: false, // Map doesn't need SSR
+});
+
+const IncidentsPanel = dynamic(() => import('@/components/IncidentsPanel'), {
+  loading: () => <PanelSkeleton />,
+  ssr: false,
+});
+
+const MaintenancePanel = dynamic(() => import('@/components/MaintenancePanel'), {
+  loading: () => <PanelSkeleton />,
+  ssr: false,
+});
 
 export default function Dashboard() {
   const { data, isLoading, isError, refresh } = useCloudflareStatus();

@@ -268,10 +268,9 @@ export default function WorldMap({ components }: WorldMapProps) {
         </div>
       </div>
 
-      {/* Map Container */}
+      {/* Map Container - Responsive height */}
       <div
-        className="relative"
-        style={{ height: '500px' }}
+        className="relative h-[300px] sm:h-[400px] md:h-[500px]"
         onMouseMove={handleMouseMove}
       >
         <ComposableMap

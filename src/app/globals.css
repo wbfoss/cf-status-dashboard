@@ -109,3 +109,72 @@ body {
     linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px);
   background-size: 50px 50px;
 }
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  /* Reduce grid pattern on mobile for performance */
+  .noc-grid-bg {
+    background-size: 30px 30px;
+  }
+
+  /* Smaller scrollbar on mobile */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  /* Reduce pulse animation intensity on mobile */
+  .pulse-operational,
+  .pulse-degraded,
+  .pulse-partial,
+  .pulse-outage {
+    animation: none;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .pulse-operational,
+  .pulse-degraded,
+  .pulse-partial,
+  .pulse-outage {
+    animation: none;
+  }
+
+  .animate-pulse,
+  .animate-spin {
+    animation: none;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (pointer: coarse) {
+  button,
+  a,
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Improve text rendering */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
