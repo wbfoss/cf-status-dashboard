@@ -74,10 +74,14 @@ export default function IncidentsPanel({ incidents }: IncidentsPanelProps) {
 
 function IncidentCard({ incident }: { incident: Incident }) {
   const latestUpdate = incident.incident_updates?.[0];
+  const incidentUrl = incident.shortlink || 'https://www.cloudflarestatus.com';
 
   return (
-    <div
-      className="rounded border-l-2 p-3"
+    <a
+      href={incidentUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block rounded border-l-2 p-3 transition-colors hover:brightness-110"
       style={{
         backgroundColor: 'var(--noc-bg-secondary)',
         borderLeftColor: getStatusColor(incident.status),
@@ -114,6 +118,6 @@ function IncidentCard({ incident }: { incident: Incident }) {
           <span className="shrink-0">{incident.components.length} affected</span>
         )}
       </div>
-    </div>
+    </a>
   );
 }
