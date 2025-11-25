@@ -11,18 +11,26 @@ export interface CloudflareStatus {
   };
 }
 
+export type ComponentStatus =
+  | 'operational'
+  | 'degraded_performance'
+  | 'partial_outage'
+  | 'major_outage'
+  | 'under_maintenance';
+
 export interface Component {
   id: string;
   name: string;
-  status: 'operational' | 'degraded_performance' | 'partial_outage' | 'major_outage';
+  status: ComponentStatus;
   created_at: string;
   updated_at: string;
   position: number;
   description: string | null;
   showcase: boolean;
   group_id: string | null;
+  group: boolean;
   only_show_if_degraded: boolean;
-  components?: Component[];
+  components?: string[];
 }
 
 export interface ComponentsResponse {

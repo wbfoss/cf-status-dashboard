@@ -43,6 +43,8 @@ export function getStatusColor(status: string): string {
     case 'major':
     case 'critical':
       return 'var(--noc-major)';
+    case 'under_maintenance':
+      return 'var(--noc-maintenance)';
     default:
       return 'var(--noc-text-secondary)';
   }
@@ -62,6 +64,8 @@ export function getStatusBgColor(status: string): string {
     case 'major':
     case 'critical':
       return 'var(--noc-major-bg)';
+    case 'under_maintenance':
+      return 'var(--noc-maintenance-bg)';
     default:
       return 'var(--noc-bg-elevated)';
   }
@@ -73,6 +77,7 @@ export function getStatusLabel(status: string): string {
     degraded_performance: 'Degraded',
     partial_outage: 'Partial Outage',
     major_outage: 'Major Outage',
+    under_maintenance: 'Maintenance',
     none: 'All Systems Operational',
     minor: 'Minor Issues',
     major: 'Major Issues',
