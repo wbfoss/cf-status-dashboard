@@ -2,7 +2,7 @@ import useSWR from 'swr';
 import type { SummaryResponse } from './types';
 
 const API_BASE = 'https://www.cloudflarestatus.com/api/v2';
-const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const REFRESH_INTERVAL = 60 * 60 * 1000; // 1 hour
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);

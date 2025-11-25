@@ -87,7 +87,7 @@ export default function Dashboard() {
               cloudflarestatus.com
             </a>
           </span>
-          <span>Auto-refresh: 5min</span>
+          <span>Auto-refresh: 1hr</span>
         </div>
       </footer>
     </div>
