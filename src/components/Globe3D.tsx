@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Component } from '@/lib/types';
 import { getComponentCoordinates, extractAirportCode } from '@/lib/datacenters';
-import { getStatusColor } from '@/lib/api';
 
 // Dynamically import Globe to avoid SSR issues
 const Globe = dynamic(() => import('react-globe.gl'), {
@@ -26,7 +25,7 @@ interface DataCenterPoint {
   name: string;
   code: string;
   status: string;
-  altitude: number;
+  size: number;
   color: string;
 }
 
@@ -54,8 +53,8 @@ export default function Globe3D({ components }: Globe3DProps) {
           name: component.name.replace(/ - \([A-Z]{3}\)$/, ''),
           code,
           status: component.status,
-          // Spikes: operational = shorter, issues = taller
-          altitude: isOperational ? 0.05 : 0.15,
+          // Spike height: operational = shorter, issues = taller
+          size: isOperational ? 0.4 : 1.2,
           color: getStatusColorHex(component.status),
         });
       }
@@ -111,6 +110,18 @@ export default function Globe3D({ components }: Globe3DProps) {
     }
   }, [dimensions]);
 
+  // Point altitude accessor for spike height
+  const getPointAltitude = useCallback((d: object) => {
+    const dc = d as DataCenterPoint;
+    return dc.size;
+  }, []);
+
+  // Point color accessor
+  const getPointColor = useCallback((d: object) => {
+    const dc = d as DataCenterPoint;
+    return dc.color;
+  }, []);
+
   return (
     <div className="relative w-full h-full" ref={containerRef}>
       {dimensions.width > 0 && (
@@ -124,65 +135,16 @@ export default function Globe3D({ components }: Globe3DProps) {
           // Atmosphere
           atmosphereColor="#3a86ff"
           atmosphereAltitude={0.15}
-          // Custom spikes layer - thin light-emitting spikes
-          customLayerData={dataCenters}
-          customThreeObject={(d: object) => {
-            const dc = d as DataCenterPoint;
-            const THREE = require('three');
-
-            // Create a group to hold spike and glow
-            const group = new THREE.Group();
-
-            // Spike height based on status
-            const spikeHeight = dc.status === 'operational' ? 8 : 20;
-
-            // Main spike - very thin cone (sharp point)
-            const spikeGeometry = new THREE.ConeGeometry(0.15, spikeHeight, 8);
-            const spikeMaterial = new THREE.MeshBasicMaterial({
-              color: dc.color,
-              transparent: true,
-              opacity: 0.95,
-            });
-            const spike = new THREE.Mesh(spikeGeometry, spikeMaterial);
-            spike.position.y = spikeHeight / 2;
-            group.add(spike);
-
-            // Inner glow line for light effect
-            const glowGeometry = new THREE.CylinderGeometry(0.05, 0.05, spikeHeight * 0.9, 4);
-            const glowMaterial = new THREE.MeshBasicMaterial({
-              color: '#ffffff',
-              transparent: true,
-              opacity: 0.6,
-            });
-            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-            glow.position.y = spikeHeight / 2;
-            group.add(glow);
-
-            // Base dot
-            const baseGeometry = new THREE.SphereGeometry(0.3, 8, 8);
-            const baseMaterial = new THREE.MeshBasicMaterial({
-              color: dc.color,
-              transparent: true,
-              opacity: 0.9,
-            });
-            const base = new THREE.Mesh(baseGeometry, baseMaterial);
-            group.add(base);
-
-            return group;
-          }}
-          customThreeObjectUpdate={(obj: any, d: object) => {
-            const dc = d as DataCenterPoint;
-            if (globeRef.current) {
-              const coords = globeRef.current.getCoords(dc.lat, dc.lng, 0);
-              if (coords) {
-                Object.assign(obj.position, coords);
-                // Orient spike to point outward from globe center
-                obj.lookAt(0, 0, 0);
-                obj.rotateX(Math.PI / 2);
-              }
-            }
-          }}
-          onCustomLayerHover={(d: object | null) => setHoveredPoint(d as DataCenterPoint | null)}
+          // Points layer - creates spikes from surface
+          pointsData={dataCenters}
+          pointLat="lat"
+          pointLng="lng"
+          pointAltitude={getPointAltitude}
+          pointColor={getPointColor}
+          pointRadius={0.12}
+          pointsMerge={false}
+          pointResolution={6}
+          onPointHover={(point: object | null) => setHoveredPoint(point as DataCenterPoint | null)}
         />
       )}
 
@@ -196,7 +158,7 @@ export default function Globe3D({ components }: Globe3DProps) {
         }}
       >
         <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--noc-text-primary)' }}>
-          Global Network
+          Cloudflare Global DCs
         </h3>
         <div className="space-y-2 text-xs">
           <LegendItem color="#3fb950" label="Operational" count={statusCounts.operational} />

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useCloudflareStatus } from '@/lib/api';
 import { Header } from '@/components';
@@ -17,7 +18,12 @@ const StatusSummary = dynamic(() => import('@/components/StatusSummary'), {
 
 const WorldMap = dynamic(() => import('@/components/WorldMap'), {
   loading: () => <MapSkeleton />,
-  ssr: false, // Map doesn't need SSR
+  ssr: false,
+});
+
+const Globe3D = dynamic(() => import('@/components/Globe3D'), {
+  loading: () => <MapSkeleton />,
+  ssr: false,
 });
 
 const IncidentsPanel = dynamic(() => import('@/components/IncidentsPanel'), {
@@ -34,8 +40,11 @@ const AboutSection = dynamic(() => import('@/components/AboutSection'), {
   ssr: false,
 });
 
+type ViewMode = 'globe' | 'map';
+
 export default function Dashboard() {
   const { data, isLoading, isError, refresh } = useCloudflareStatus();
+  const [viewMode, setViewMode] = useState<ViewMode>('globe');
 
   const components = data?.components || [];
   const incidents = data?.incidents || [];
@@ -90,9 +99,58 @@ export default function Dashboard() {
           />
         </section>
 
-        {/* World Map */}
+        {/* Globe/Map View */}
         <section className="mb-5">
-          <WorldMap components={components} />
+          {/* View Toggle */}
+          <div className="flex items-center justify-end mb-3">
+            <div
+              className="inline-flex rounded-lg p-1"
+              style={{ backgroundColor: 'var(--noc-bg-card)', border: '1px solid var(--noc-border)' }}
+            >
+              <button
+                onClick={() => setViewMode('globe')}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: viewMode === 'globe' ? 'var(--noc-accent)' : 'transparent',
+                  color: viewMode === 'globe' ? 'white' : 'var(--noc-text-secondary)',
+                }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                3D Globe
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+                style={{
+                  backgroundColor: viewMode === 'map' ? 'var(--noc-accent)' : 'transparent',
+                  color: viewMode === 'map' ? 'white' : 'var(--noc-text-secondary)',
+                }}
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                2D Map
+              </button>
+            </div>
+          </div>
+
+          {/* View Container */}
+          {viewMode === 'globe' ? (
+            <div
+              className="rounded-lg border overflow-hidden"
+              style={{
+                backgroundColor: 'var(--noc-bg-card)',
+                borderColor: 'var(--noc-border)',
+                height: '500px',
+              }}
+            >
+              <Globe3D components={components} />
+            </div>
+          ) : (
+            <WorldMap components={components} />
+          )}
         </section>
 
         {/* Incidents & Maintenance */}

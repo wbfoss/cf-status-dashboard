@@ -73,7 +73,7 @@ export default function GlobePage() {
                 backdropFilter: 'blur(8px)',
               }}
             >
-              3D Network Globe
+              Cloudflare Global DCs
             </h1>
 
             <div className="w-32" />
