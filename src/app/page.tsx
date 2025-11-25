@@ -3,9 +3,7 @@
 import { useCloudflareStatus } from '@/lib/api';
 import {
   Header,
-  StatusHero,
-  MetricCard,
-  StatusChart,
+  StatusSummary,
   WorldMap,
   IncidentsPanel,
   MaintenancePanel,
@@ -17,20 +15,6 @@ export default function Dashboard() {
   const components = data?.components || [];
   const incidents = data?.incidents || [];
   const maintenances = data?.scheduled_maintenances || [];
-
-  // Filter to only count non-group components (actual services)
-  const services = components.filter(c => !c.group);
-
-  const operationalCount = services.filter(c => c.status === 'operational').length;
-  const degradedCount = services.filter(c => c.status === 'degraded_performance').length;
-  const outageCount = services.filter(c =>
-    c.status === 'partial_outage' || c.status === 'major_outage'
-  ).length;
-  const maintenanceCount = services.filter(c => c.status === 'under_maintenance').length;
-
-  const activeIncidents = incidents.filter(i =>
-    ['investigating', 'identified', 'monitoring'].includes(i.status)
-  ).length;
 
   if (isError) {
     return (
@@ -71,33 +55,16 @@ export default function Dashboard() {
       />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-5">
-        {/* Top Row: Status + Metrics + Chart */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
-          <div className="lg:col-span-2">
-            <StatusHero
-              indicator={data?.status?.indicator || 'none'}
-              description={data?.status?.description || 'Loading...'}
-            />
-          </div>
-          <MetricCard
-            title="Services"
-            value={`${operationalCount}/${services.length}`}
-            subtitle="operational"
-            color="var(--noc-operational)"
+        {/* Status Summary */}
+        <section className="mb-5">
+          <StatusSummary
+            components={components}
+            incidents={incidents}
+            maintenances={maintenances}
+            statusIndicator={data?.status?.indicator || 'none'}
+            statusDescription={data?.status?.description || 'Loading...'}
           />
-          <MetricCard
-            title="Issues"
-            value={degradedCount + outageCount + activeIncidents}
-            subtitle={activeIncidents > 0 ? `${activeIncidents} incident${activeIncidents > 1 ? 's' : ''}` : 'none active'}
-            color={degradedCount + outageCount + activeIncidents > 0 ? 'var(--noc-major)' : 'var(--noc-operational)'}
-          />
-          <StatusChart
-            operational={operationalCount}
-            degraded={degradedCount}
-            outage={outageCount}
-            maintenance={maintenanceCount}
-          />
-        </div>
+        </section>
 
         {/* World Map */}
         <section className="mb-5">

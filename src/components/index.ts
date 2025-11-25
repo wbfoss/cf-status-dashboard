@@ -2,6 +2,7 @@ export { default as Header } from './Header';
 export { default as StatusHero } from './StatusHero';
 export { default as MetricCard } from './MetricCard';
 export { default as StatusChart } from './StatusChart';
+export { default as StatusSummary } from './StatusSummary';
 export { default as WorldMap } from './WorldMap';
 export { default as ComponentsGrid } from './ComponentsGrid';
 export { default as IncidentsPanel } from './IncidentsPanel';
