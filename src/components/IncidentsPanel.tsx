@@ -108,14 +108,17 @@ function IncidentCard({ incident }: { incident: Incident }) {
         </p>
       )}
 
-      <div className="flex items-center justify-between text-[10px]" style={{ color: 'var(--noc-text-muted)' }}>
-        <div className="flex items-center gap-2">
-          <span>{getRelativeTime(incident.created_at)}</span>
-          <span>•</span>
-          <span>{formatDateTime(incident.created_at)}</span>
+      <div className="text-[10px] space-y-1" style={{ color: 'var(--noc-text-muted)' }}>
+        <div className="flex items-center justify-between">
+          <span>First reported: {getRelativeTime(incident.created_at)}</span>
+          {incident.components.length > 0 && (
+            <span className="shrink-0">{incident.components.length} affected</span>
+          )}
         </div>
-        {incident.components.length > 0 && (
-          <span className="shrink-0">{incident.components.length} affected</span>
+        {latestUpdate && (
+          <div>
+            Last updated: {formatDateTime(latestUpdate.created_at)}
+          </div>
         )}
       </div>
     </a>
