@@ -34,6 +34,7 @@ export default function Globe3D({ components }: Globe3DProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredPoint, setHoveredPoint] = useState<DataCenterPoint | null>(null);
   const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const rotateSpeedRef = useRef(0.3);
   const targetSpeedRef = useRef(0.3);
   const animationFrameRef = useRef<number | null>(null);
@@ -183,10 +184,19 @@ export default function Globe3D({ components }: Globe3DProps) {
   }, []);
 
   // Handle tooltip visibility with smooth transition
-  const handleLabelHover = useCallback((label: object | null) => {
+  const handleLabelHover = useCallback((label: object | null, prevLabel: object | null) => {
     if (label) {
-      setHoveredPoint(label as DataCenterPoint);
+      const dc = label as DataCenterPoint;
+      setHoveredPoint(dc);
       setTooltipVisible(true);
+
+      // Get screen coordinates from the globe
+      if (globeRef.current) {
+        const coords = globeRef.current.getScreenCoords(dc.lat, dc.lng, 0.01);
+        if (coords) {
+          setTooltipPos({ x: coords.x, y: coords.y });
+        }
+      }
     } else {
       // Delay hiding for smooth fade out
       setTooltipVisible(false);
@@ -196,9 +206,18 @@ export default function Globe3D({ components }: Globe3DProps) {
     }
   }, []);
 
-  const handleLabelClick = useCallback((label: object) => {
-    setHoveredPoint(label as DataCenterPoint);
+  const handleLabelClick = useCallback((label: object, event: MouseEvent) => {
+    const dc = label as DataCenterPoint;
+    setHoveredPoint(dc);
     setTooltipVisible(true);
+
+    // Get screen coordinates from the globe
+    if (globeRef.current) {
+      const coords = globeRef.current.getScreenCoords(dc.lat, dc.lng, 0.01);
+      if (coords) {
+        setTooltipPos({ x: coords.x, y: coords.y });
+      }
+    }
   }, []);
 
   // Label accessors
@@ -209,14 +228,14 @@ export default function Globe3D({ components }: Globe3DProps) {
 
   const getLabelSize = useCallback((d: object) => {
     const dc = d as DataCenterPoint;
-    // Non-operational DCs get larger labels
-    return dc.status === 'operational' ? 0.5 : 1.0;
+    // Larger labels for better visibility and tap area
+    return dc.status === 'operational' ? 0.6 : 1.2;
   }, []);
 
   const getLabelDotRadius = useCallback((d: object) => {
     const dc = d as DataCenterPoint;
-    // Non-operational DCs get larger dots
-    return dc.status === 'operational' ? 0.3 : 0.6;
+    // Larger dots for easier clicking/tapping
+    return dc.status === 'operational' ? 0.5 : 0.9;
   }, []);
 
   const getLabelText = useCallback((d: object) => {
@@ -314,30 +333,33 @@ export default function Globe3D({ components }: Globe3DProps) {
         </div>
       </div>
 
-      {/* Tooltip with smooth transitions */}
+      {/* Tooltip positioned at marker location */}
       <div
-        className="absolute bottom-16 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg max-w-[90vw] sm:max-w-none pointer-events-none"
+        className="absolute px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg pointer-events-none whitespace-nowrap"
         style={{
+          left: tooltipPos.x,
+          top: tooltipPos.y,
           backgroundColor: 'rgba(10, 14, 20, 0.95)',
           border: '1px solid var(--noc-border)',
           backdropFilter: 'blur(8px)',
           opacity: tooltipVisible && hoveredPoint ? 1 : 0,
-          transform: `translateX(-50%) translateY(${tooltipVisible && hoveredPoint ? 0 : 8}px)`,
-          transition: 'opacity 150ms ease-out, transform 150ms ease-out',
+          transform: `translate(-50%, calc(-100% - 12px)) translateY(${tooltipVisible && hoveredPoint ? 0 : 4}px)`,
+          transition: 'opacity 120ms ease-out, transform 120ms ease-out',
           visibility: hoveredPoint ? 'visible' : 'hidden',
+          zIndex: 100,
         }}
       >
         {hoveredPoint && (
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2">
             <span
-              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0"
+              className="w-2 h-2 rounded-full flex-shrink-0"
               style={{ backgroundColor: hoveredPoint.color }}
             />
-            <div className="min-w-0">
-              <div className="font-semibold text-xs sm:text-sm truncate" style={{ color: 'var(--noc-text-primary)' }}>
+            <div>
+              <div className="font-semibold text-[11px] sm:text-xs" style={{ color: 'var(--noc-text-primary)' }}>
                 {hoveredPoint.name}
               </div>
-              <div className="text-[10px] sm:text-xs flex items-center gap-1.5" style={{ color: 'var(--noc-text-muted)' }}>
+              <div className="text-[9px] sm:text-[10px] flex items-center gap-1" style={{ color: 'var(--noc-text-muted)' }}>
                 <span className="font-mono">{hoveredPoint.code}</span>
                 <span>•</span>
                 <span style={{ color: hoveredPoint.color }}>{getStatusLabel(hoveredPoint.status)}</span>
