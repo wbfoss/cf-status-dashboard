@@ -139,11 +139,10 @@ export default function Dashboard() {
           {/* View Container */}
           {viewMode === 'globe' ? (
             <div
-              className="rounded-lg border overflow-hidden"
+              className="rounded-lg border overflow-hidden h-[400px] sm:h-[500px] lg:h-[600px]"
               style={{
                 backgroundColor: '#000',
                 borderColor: 'var(--noc-border)',
-                height: '600px',
               }}
             >
               <Globe3D components={components} />

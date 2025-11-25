@@ -33,6 +33,7 @@ export default function Globe3D({ components }: Globe3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredPoint, setHoveredPoint] = useState<DataCenterPoint | null>(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   // Process components to get data centers with coordinates
   const dataCenters = useMemo(() => {
@@ -106,6 +107,16 @@ export default function Globe3D({ components }: Globe3DProps) {
     }
   }, [dimensions]);
 
+  // Pause auto-rotate on hover
+  useEffect(() => {
+    if (globeRef.current) {
+      const controls = globeRef.current.controls();
+      if (controls) {
+        controls.autoRotate = !isHovering;
+      }
+    }
+  }, [isHovering]);
+
   // Label accessors
   const getLabelColor = useCallback((d: object) => {
     const dc = d as DataCenterPoint;
@@ -130,7 +141,12 @@ export default function Globe3D({ components }: Globe3DProps) {
   }, []);
 
   return (
-    <div className="relative w-full h-full" ref={containerRef}>
+    <div
+      className="relative w-full h-full"
+      ref={containerRef}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       {dimensions.width > 0 && (
         <Globe
           ref={globeRef}
@@ -154,22 +170,23 @@ export default function Globe3D({ components }: Globe3DProps) {
           labelAltitude={0.01}
           labelDotOrientation={() => 'bottom'}
           onLabelHover={(label: object | null) => setHoveredPoint(label as DataCenterPoint | null)}
+          onLabelClick={(label: object) => setHoveredPoint(label as DataCenterPoint)}
         />
       )}
 
-      {/* Legend */}
+      {/* Legend - Responsive */}
       <div
-        className="absolute top-4 left-4 p-4 rounded-lg"
+        className="absolute top-2 left-2 sm:top-4 sm:left-4 p-2 sm:p-4 rounded-lg"
         style={{
           backgroundColor: 'rgba(10, 14, 20, 0.85)',
           border: '1px solid var(--noc-border)',
           backdropFilter: 'blur(8px)',
         }}
       >
-        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--noc-text-primary)' }}>
+        <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3" style={{ color: 'var(--noc-text-primary)' }}>
           Cloudflare Global DCs
         </h3>
-        <div className="space-y-2 text-xs">
+        <div className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs">
           <LegendItem color="#3fb950" label="Operational" count={statusCounts.operational} />
           {statusCounts.degraded > 0 && (
             <LegendItem color="#d29922" label="Degraded" count={statusCounts.degraded} />
@@ -184,47 +201,50 @@ export default function Globe3D({ components }: Globe3DProps) {
             <LegendItem color="#58a6ff" label="Maintenance" count={statusCounts.maintenance} />
           )}
         </div>
-        <div className="mt-3 pt-3 border-t text-[10px]" style={{ borderColor: 'var(--noc-border)', color: 'var(--noc-text-muted)' }}>
+        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t text-[9px] sm:text-[10px]" style={{ borderColor: 'var(--noc-border)', color: 'var(--noc-text-muted)' }}>
           {dataCenters.length} data centers
         </div>
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltip - Responsive */}
       {hoveredPoint && (
         <div
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-3 rounded-lg"
+          className="absolute bottom-16 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg max-w-[90vw] sm:max-w-none"
           style={{
             backgroundColor: 'rgba(10, 14, 20, 0.95)',
             border: '1px solid var(--noc-border)',
             backdropFilter: 'blur(8px)',
           }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span
-              className="w-3 h-3 rounded-full"
+              className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0"
               style={{ backgroundColor: hoveredPoint.color }}
             />
-            <div>
-              <div className="font-semibold text-sm" style={{ color: 'var(--noc-text-primary)' }}>
+            <div className="min-w-0">
+              <div className="font-semibold text-xs sm:text-sm truncate" style={{ color: 'var(--noc-text-primary)' }}>
                 {hoveredPoint.name}
               </div>
-              <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>
-                {hoveredPoint.code} • {getStatusLabel(hoveredPoint.status)}
+              <div className="text-[10px] sm:text-xs flex items-center gap-1.5" style={{ color: 'var(--noc-text-muted)' }}>
+                <span className="font-mono">{hoveredPoint.code}</span>
+                <span>•</span>
+                <span style={{ color: hoveredPoint.color }}>{getStatusLabel(hoveredPoint.status)}</span>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Controls hint */}
+      {/* Controls hint - Responsive */}
       <div
-        className="absolute bottom-4 right-4 text-[10px] px-3 py-2 rounded"
+        className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-[9px] sm:text-[10px] px-2 sm:px-3 py-1.5 sm:py-2 rounded"
         style={{
           backgroundColor: 'rgba(10, 14, 20, 0.7)',
           color: 'var(--noc-text-muted)',
         }}
       >
-        Drag to rotate • Scroll to zoom
+        <span className="hidden sm:inline">Drag to rotate • Scroll to zoom</span>
+        <span className="sm:hidden">Swipe to rotate • Pinch to zoom</span>
       </div>
     </div>
   );

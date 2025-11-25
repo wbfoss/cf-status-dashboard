@@ -43,40 +43,42 @@ export default function GlobePage() {
 
   return (
     <div className="h-screen w-screen overflow-hidden" style={{ backgroundColor: '#000' }}>
-      {/* Header - Floating */}
+      {/* Header - Floating & Responsive */}
       <header
         className="absolute top-0 left-0 right-0 z-50"
         style={{ backgroundColor: 'transparent' }}
       >
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
-          <div className="h-14 flex items-center justify-between">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-6">
+          <div className="h-12 sm:h-14 flex items-center justify-between gap-2">
             <Link
               href="/"
-              className="flex items-center gap-2 text-sm hover:opacity-80 transition-opacity px-3 py-1.5 rounded-lg"
+              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm hover:opacity-80 transition-opacity px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg"
               style={{
                 color: 'var(--noc-text-secondary)',
                 backgroundColor: 'rgba(10, 14, 20, 0.7)',
                 backdropFilter: 'blur(8px)',
               }}
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back to Dashboard
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Back</span>
             </Link>
 
             <h1
-              className="text-lg font-semibold px-4 py-1.5 rounded-lg"
+              className="text-sm sm:text-lg font-semibold px-2 sm:px-4 py-1 sm:py-1.5 rounded-lg"
               style={{
                 color: 'var(--noc-text-primary)',
                 backgroundColor: 'rgba(10, 14, 20, 0.7)',
                 backdropFilter: 'blur(8px)',
               }}
             >
-              Cloudflare Global DCs
+              <span className="hidden sm:inline">Cloudflare Global DCs</span>
+              <span className="sm:hidden">Global DCs</span>
             </h1>
 
-            <div className="w-32" />
+            <div className="w-16 sm:w-32" />
           </div>
         </div>
       </header>
