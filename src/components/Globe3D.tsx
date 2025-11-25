@@ -33,7 +33,10 @@ export default function Globe3D({ components }: Globe3DProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredPoint, setHoveredPoint] = useState<DataCenterPoint | null>(null);
-  const [isHovering, setIsHovering] = useState(false);
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const rotateSpeedRef = useRef(0.3);
+  const targetSpeedRef = useRef(0.3);
+  const animationFrameRef = useRef<number | null>(null);
 
   // Process components to get data centers with coordinates
   const dataCenters = useMemo(() => {
@@ -107,15 +110,96 @@ export default function Globe3D({ components }: Globe3DProps) {
     }
   }, [dimensions]);
 
-  // Pause auto-rotate on hover
+  // Smooth rotation speed animation
   useEffect(() => {
-    if (globeRef.current) {
-      const controls = globeRef.current.controls();
+    const animate = () => {
+      const controls = globeRef.current?.controls();
       if (controls) {
-        controls.autoRotate = !isHovering;
+        // Smoothly interpolate towards target speed (easing)
+        const diff = targetSpeedRef.current - rotateSpeedRef.current;
+        rotateSpeedRef.current += diff * 0.08; // Smooth easing factor
+
+        // Apply the speed
+        controls.autoRotateSpeed = rotateSpeedRef.current;
+
+        // Keep animating if not at target
+        if (Math.abs(diff) > 0.001) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        }
       }
+    };
+
+    animate();
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  // Handle hover state for smooth rotation pause
+  const handleMouseEnter = useCallback(() => {
+    targetSpeedRef.current = 0;
+    // Restart animation loop
+    const animate = () => {
+      const controls = globeRef.current?.controls();
+      if (controls) {
+        const diff = targetSpeedRef.current - rotateSpeedRef.current;
+        rotateSpeedRef.current += diff * 0.08;
+        controls.autoRotateSpeed = rotateSpeedRef.current;
+        if (Math.abs(diff) > 0.001) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        }
+      }
+    };
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    animate();
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    targetSpeedRef.current = 0.3;
+    // Clear tooltip with delay for smooth fade
+    setTimeout(() => {
+      if (targetSpeedRef.current === 0.3) {
+        setHoveredPoint(null);
+        setTooltipVisible(false);
+      }
+    }, 200);
+    // Restart animation loop
+    const animate = () => {
+      const controls = globeRef.current?.controls();
+      if (controls) {
+        const diff = targetSpeedRef.current - rotateSpeedRef.current;
+        rotateSpeedRef.current += diff * 0.08;
+        controls.autoRotateSpeed = rotateSpeedRef.current;
+        if (Math.abs(diff) > 0.001) {
+          animationFrameRef.current = requestAnimationFrame(animate);
+        }
+      }
+    };
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    animate();
+  }, []);
+
+  // Handle tooltip visibility with smooth transition
+  const handleLabelHover = useCallback((label: object | null) => {
+    if (label) {
+      setHoveredPoint(label as DataCenterPoint);
+      setTooltipVisible(true);
+    } else {
+      // Delay hiding for smooth fade out
+      setTooltipVisible(false);
+      setTimeout(() => {
+        setHoveredPoint(null);
+      }, 150);
     }
-  }, [isHovering]);
+  }, []);
+
+  const handleLabelClick = useCallback((label: object) => {
+    setHoveredPoint(label as DataCenterPoint);
+    setTooltipVisible(true);
+  }, []);
 
   // Label accessors
   const getLabelColor = useCallback((d: object) => {
@@ -144,8 +228,10 @@ export default function Globe3D({ components }: Globe3DProps) {
     <div
       className="relative w-full h-full"
       ref={containerRef}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleMouseEnter}
+      onTouchEnd={handleMouseLeave}
     >
       {dimensions.width > 0 && (
         <Globe
@@ -169,24 +255,46 @@ export default function Globe3D({ components }: Globe3DProps) {
           labelResolution={2}
           labelAltitude={0.01}
           labelDotOrientation={() => 'bottom'}
-          onLabelHover={(label: object | null) => setHoveredPoint(label as DataCenterPoint | null)}
-          onLabelClick={(label: object) => setHoveredPoint(label as DataCenterPoint)}
+          onLabelHover={handleLabelHover}
+          onLabelClick={handleLabelClick}
         />
       )}
 
-      {/* Legend - Responsive */}
+      {/* Legend - Mobile: compact row, Desktop: full */}
+      {/* Mobile Legend - Compact */}
       <div
-        className="absolute top-2 left-2 sm:top-4 sm:left-4 p-2 sm:p-4 rounded-lg"
+        className="sm:hidden absolute top-2 left-2 right-2 flex items-center justify-between px-2 py-1.5 rounded-lg"
+        style={{
+          backgroundColor: 'rgba(10, 14, 20, 0.8)',
+          border: '1px solid var(--noc-border)',
+          backdropFilter: 'blur(8px)',
+        }}
+      >
+        <span className="text-[10px] font-medium" style={{ color: 'var(--noc-text-muted)' }}>
+          {dataCenters.length} DCs
+        </span>
+        <div className="flex items-center gap-2">
+          <MiniLegendItem color="#3fb950" count={statusCounts.operational} />
+          {statusCounts.degraded > 0 && <MiniLegendItem color="#d29922" count={statusCounts.degraded} />}
+          {statusCounts.partialOutage > 0 && <MiniLegendItem color="#db6d28" count={statusCounts.partialOutage} />}
+          {statusCounts.majorOutage > 0 && <MiniLegendItem color="#f85149" count={statusCounts.majorOutage} />}
+          {statusCounts.maintenance > 0 && <MiniLegendItem color="#58a6ff" count={statusCounts.maintenance} />}
+        </div>
+      </div>
+
+      {/* Desktop Legend - Full */}
+      <div
+        className="hidden sm:block absolute top-4 left-4 p-4 rounded-lg"
         style={{
           backgroundColor: 'rgba(10, 14, 20, 0.85)',
           border: '1px solid var(--noc-border)',
           backdropFilter: 'blur(8px)',
         }}
       >
-        <h3 className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3" style={{ color: 'var(--noc-text-primary)' }}>
+        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--noc-text-primary)' }}>
           Cloudflare Global DCs
         </h3>
-        <div className="space-y-1.5 sm:space-y-2 text-[10px] sm:text-xs">
+        <div className="space-y-2 text-xs">
           <LegendItem color="#3fb950" label="Operational" count={statusCounts.operational} />
           {statusCounts.degraded > 0 && (
             <LegendItem color="#d29922" label="Degraded" count={statusCounts.degraded} />
@@ -201,21 +309,25 @@ export default function Globe3D({ components }: Globe3DProps) {
             <LegendItem color="#58a6ff" label="Maintenance" count={statusCounts.maintenance} />
           )}
         </div>
-        <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t text-[9px] sm:text-[10px]" style={{ borderColor: 'var(--noc-border)', color: 'var(--noc-text-muted)' }}>
+        <div className="mt-3 pt-3 border-t text-[10px]" style={{ borderColor: 'var(--noc-border)', color: 'var(--noc-text-muted)' }}>
           {dataCenters.length} data centers
         </div>
       </div>
 
-      {/* Tooltip - Responsive */}
-      {hoveredPoint && (
-        <div
-          className="absolute bottom-16 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg max-w-[90vw] sm:max-w-none"
-          style={{
-            backgroundColor: 'rgba(10, 14, 20, 0.95)',
-            border: '1px solid var(--noc-border)',
-            backdropFilter: 'blur(8px)',
-          }}
-        >
+      {/* Tooltip with smooth transitions */}
+      <div
+        className="absolute bottom-16 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg max-w-[90vw] sm:max-w-none pointer-events-none"
+        style={{
+          backgroundColor: 'rgba(10, 14, 20, 0.95)',
+          border: '1px solid var(--noc-border)',
+          backdropFilter: 'blur(8px)',
+          opacity: tooltipVisible && hoveredPoint ? 1 : 0,
+          transform: `translateX(-50%) translateY(${tooltipVisible && hoveredPoint ? 0 : 8}px)`,
+          transition: 'opacity 150ms ease-out, transform 150ms ease-out',
+          visibility: hoveredPoint ? 'visible' : 'hidden',
+        }}
+      >
+        {hoveredPoint && (
           <div className="flex items-center gap-2 sm:gap-3">
             <span
               className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0"
@@ -232,8 +344,8 @@ export default function Globe3D({ components }: Globe3DProps) {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Controls hint - Responsive */}
       <div
@@ -258,6 +370,16 @@ function LegendItem({ color, label, count }: { color: string; label: string; cou
         <span style={{ color: 'var(--noc-text-secondary)' }}>{label}</span>
       </div>
       <span className="font-semibold" style={{ color }}>{count}</span>
+    </div>
+  );
+}
+
+// Compact legend item for mobile - just dot and count
+function MiniLegendItem({ color, count }: { color: string; count: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+      <span className="text-[10px] font-medium" style={{ color }}>{count}</span>
     </div>
   );
 }
