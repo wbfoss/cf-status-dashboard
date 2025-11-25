@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCloudflareStatus, getStatusColor, getStatusLabel } from '@/lib/api';
 import { extractAirportCode } from '@/lib/datacenters';
 import { Component } from '@/lib/types';
+import { AboutSection } from '@/components';
 
 export default function ServicesPage() {
   const { data, isLoading, isError, refresh } = useCloudflareStatus();
@@ -147,6 +148,9 @@ export default function ServicesPage() {
             </div>
           </div>
         )}
+
+        {/* About Section */}
+        <AboutSection />
       </main>
     </div>
   );

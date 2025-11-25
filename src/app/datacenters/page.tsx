@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useCloudflareStatus, getStatusColor, getStatusLabel } from '@/lib/api';
 import { extractAirportCode } from '@/lib/datacenters';
 import { Component } from '@/lib/types';
+import { AboutSection } from '@/components';
 
 type SortField = 'name' | 'status' | 'code';
 type SortOrder = 'asc' | 'desc';
@@ -283,6 +284,9 @@ export default function DataCentersPage() {
             </div>
           </div>
         )}
+
+        {/* About Section */}
+        <AboutSection />
       </main>
     </div>
   );

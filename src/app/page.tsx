@@ -30,6 +30,10 @@ const MaintenancePanel = dynamic(() => import('@/components/MaintenancePanel'), 
   ssr: false,
 });
 
+const AboutSection = dynamic(() => import('@/components/AboutSection'), {
+  ssr: false,
+});
+
 export default function Dashboard() {
   const { data, isLoading, isError, refresh } = useCloudflareStatus();
 
@@ -96,6 +100,9 @@ export default function Dashboard() {
           <IncidentsPanel incidents={incidents} />
           <MaintenancePanel maintenances={maintenances} />
         </section>
+
+        {/* About Section */}
+        <AboutSection />
       </main>
 
       {/* Footer */}
