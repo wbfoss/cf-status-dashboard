@@ -8,9 +8,13 @@ interface MaintenancePanelProps {
 }
 
 export default function MaintenancePanel({ maintenances }: MaintenancePanelProps) {
-  const activeMaintenance = maintenances.filter(m =>
-    ['scheduled', 'in_progress', 'verifying'].includes(m.status)
-  );
+  // Filter active maintenance and sort: in_progress first, then verifying, then scheduled
+  const activeMaintenance = maintenances
+    .filter(m => ['scheduled', 'in_progress', 'verifying'].includes(m.status))
+    .sort((a, b) => {
+      const priority: Record<string, number> = { in_progress: 0, verifying: 1, scheduled: 2 };
+      return (priority[a.status] ?? 3) - (priority[b.status] ?? 3);
+    });
 
   const hasActive = activeMaintenance.length > 0;
 
