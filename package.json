@@ -1,0 +1,15 @@
+{
+  "name": "cf-status-dashboard",
+  "version": "1.0.0",
+  "description": "A real-time Cloudflare status dashboard",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "cloudflare",
+    "status",
+    "dashboard"
+  ],
+  "license": "MIT"
+}

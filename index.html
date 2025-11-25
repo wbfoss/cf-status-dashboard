@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Status Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☁️</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Cloudflare Status Dashboard</h1>
+                <div class="last-updated">
+                    <span id="status-indicator" class="status-dot"></span>
+                    <span>Last updated: <span id="last-updated">--</span></span>
+                    <button id="refresh-btn" class="refresh-btn" title="Refresh now">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Overall Status -->
+            <section class="status-card overall-status" id="overall-status">
+                <div class="card-header">
+                    <h2>Overall Status</h2>
+                </div>
+                <div class="card-content">
+                    <div class="status-display">
+                        <span id="status-icon" class="status-icon">●</span>
+                        <span id="status-text">Loading...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Components Grid -->
+            <section class="status-card">
+                <div class="card-header">
+                    <h2>Components</h2>
+                    <span class="component-count" id="component-count"></span>
+                </div>
+                <div class="card-content">
+                    <div class="components-grid" id="components-grid">
+                        <div class="loading">Loading components...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Active Incidents -->
+            <section class="status-card">
+                <div class="card-header">
+                    <h2>Active Incidents</h2>
+                    <span class="incident-count" id="incident-count"></span>
+                </div>
+                <div class="card-content">
+                    <div id="incidents-list">
+                        <div class="loading">Loading incidents...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scheduled Maintenance -->
+            <section class="status-card">
+                <div class="card-header">
+                    <h2>Scheduled Maintenance</h2>
+                    <span class="maintenance-count" id="maintenance-count"></span>
+                </div>
+                <div class="card-content">
+                    <div id="maintenance-list">
+                        <div class="loading">Loading maintenance...</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Data sourced from <a href="https://www.cloudflarestatus.com" target="_blank">cloudflarestatus.com</a> | Auto-refreshes every 5 minutes</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
