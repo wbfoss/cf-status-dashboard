@@ -91,17 +91,17 @@ export default function Globe3D({ components }: Globe3DProps) {
   // Auto-rotate and initial position
   useEffect(() => {
     if (globeRef.current) {
-      // Set initial point of view
-      globeRef.current.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 0);
+      // Set initial point of view - closer zoom for better visibility
+      globeRef.current.pointOfView({ lat: 25, lng: 0, altitude: 1.8 }, 0);
 
-      // Enable auto-rotation
+      // Enable slow auto-rotation
       const controls = globeRef.current.controls();
       if (controls) {
         controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.5;
+        controls.autoRotateSpeed = 0.3; // Very slow rotation
         controls.enableZoom = true;
-        controls.minDistance = 150;
-        controls.maxDistance = 500;
+        controls.minDistance = 120;
+        controls.maxDistance = 400;
       }
     }
   }, [dimensions]);

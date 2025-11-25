@@ -141,9 +141,9 @@ export default function Dashboard() {
             <div
               className="rounded-lg border overflow-hidden"
               style={{
-                backgroundColor: 'var(--noc-bg-card)',
+                backgroundColor: '#000',
                 borderColor: 'var(--noc-border)',
-                height: '500px',
+                height: '600px',
               }}
             >
               <Globe3D components={components} />
