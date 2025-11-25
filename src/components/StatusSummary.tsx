@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Component, Incident, ScheduledMaintenance } from '@/lib/types';
 import { extractAirportCode } from '@/lib/datacenters';
 import { getStatusColor } from '@/lib/api';
@@ -106,18 +107,24 @@ export default function StatusSummary({
             value={`${healthPercent}%`}
             color={healthPercent >= 95 ? 'var(--noc-operational)' : healthPercent >= 80 ? 'var(--noc-degraded)' : 'var(--noc-major)'}
           />
-          <QuickStat
-            label="Data Centers"
-            value={`${dcOperational}/${dcTotal}`}
-            sublabel="operational"
-            color="var(--noc-operational)"
-          />
-          <QuickStat
-            label="Core Services"
-            value={`${svcOperational}/${svcTotal}`}
-            sublabel={svcIssues > 0 ? `${svcIssues} issue${svcIssues > 1 ? 's' : ''}` : 'all operational'}
-            color={svcIssues > 0 ? 'var(--noc-major)' : 'var(--noc-operational)'}
-          />
+          <Link href="/datacenters" className="group">
+            <QuickStat
+              label="Data Centers"
+              value={`${dcOperational}/${dcTotal}`}
+              sublabel="operational"
+              color="var(--noc-operational)"
+              clickable
+            />
+          </Link>
+          <Link href="/services" className="group">
+            <QuickStat
+              label="Core Services"
+              value={`${svcOperational}/${svcTotal}`}
+              sublabel={svcIssues > 0 ? `${svcIssues} issue${svcIssues > 1 ? 's' : ''}` : 'all operational'}
+              color={svcIssues > 0 ? 'var(--noc-major)' : 'var(--noc-operational)'}
+              clickable
+            />
+          </Link>
           <QuickStat
             label="Active Incidents"
             value={activeIncidents}
@@ -125,6 +132,39 @@ export default function StatusSummary({
             color={activeIncidents > 0 ? 'var(--noc-major)' : 'var(--noc-operational)'}
           />
         </div>
+      </div>
+
+      {/* Mobile Stats Links */}
+      <div
+        className="md:hidden px-5 py-3 border-t grid grid-cols-2 gap-3"
+        style={{ borderColor: 'var(--noc-border)', backgroundColor: 'var(--noc-bg-secondary)' }}
+      >
+        <Link
+          href="/datacenters"
+          className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
+          style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+        >
+          <div>
+            <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Data Centers</div>
+            <div className="text-lg font-bold" style={{ color: 'var(--noc-operational)' }}>{dcOperational}/{dcTotal}</div>
+          </div>
+          <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+        <Link
+          href="/services"
+          className="flex items-center justify-between p-3 rounded-lg border transition-colors hover:border-opacity-80"
+          style={{ backgroundColor: 'var(--noc-bg-card)', borderColor: 'var(--noc-border)' }}
+        >
+          <div>
+            <div className="text-xs" style={{ color: 'var(--noc-text-muted)' }}>Core Services</div>
+            <div className="text-lg font-bold" style={{ color: svcIssues > 0 ? 'var(--noc-major)' : 'var(--noc-operational)' }}>{svcOperational}/{svcTotal}</div>
+          </div>
+          <svg className="w-4 h-4" style={{ color: 'var(--noc-text-muted)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
       </div>
 
       {/* Status Breakdown Bar */}
@@ -197,16 +237,23 @@ function QuickStat({
   value,
   sublabel,
   color,
+  clickable,
 }: {
   label: string;
   value: string | number;
   sublabel?: string;
   color: string;
+  clickable?: boolean;
 }) {
   return (
-    <div>
-      <div className="text-[10px] uppercase tracking-wider mb-0.5" style={{ color: 'var(--noc-text-muted)' }}>
+    <div className={clickable ? 'group-hover:opacity-80 transition-opacity' : ''}>
+      <div className="text-[10px] uppercase tracking-wider mb-0.5 flex items-center gap-1" style={{ color: 'var(--noc-text-muted)' }}>
         {label}
+        {clickable && (
+          <svg className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        )}
       </div>
       <div className="text-xl font-bold tabular-nums" style={{ color }}>
         {value}

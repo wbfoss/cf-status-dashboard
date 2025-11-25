@@ -53,9 +53,9 @@ declare module 'react-simple-maps' {
     minZoom?: number;
     maxZoom?: number;
     children?: ReactNode;
-    onMoveStart?: () => void;
-    onMove?: () => void;
-    onMoveEnd?: () => void;
+    onMoveStart?: (event: { coordinates: [number, number]; zoom: number }) => void;
+    onMove?: (event: { coordinates: [number, number]; zoom: number }) => void;
+    onMoveEnd?: (event: { coordinates: [number, number]; zoom: number }) => void;
   }
 
   export const ComposableMap: ComponentType<ComposableMapProps>;
