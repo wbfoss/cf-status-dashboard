@@ -50,12 +50,10 @@ export default function StatusSummary({
     ['scheduled', 'in_progress', 'verifying'].includes(m.status)
   ).length;
 
-  // Overall health percentage (based on data centers with weighted severity)
-  // Operational = 100%, Degraded = 75%, Partial Outage = 50%, Major Outage = 0%, Maintenance = 100% (planned)
-  const healthScore = dcTotal > 0
-    ? (dcOperational * 100 + dcDegraded * 75 + dcPartialOutage * 50 + dcMajorOutage * 0 + dcMaintenance * 100) / dcTotal
-    : 100;
-  const healthPercent = Math.round(healthScore);
+  // Overall health percentage (based on data centers)
+  // Simple calculation: Operational DCs / Total active DCs (excluding planned maintenance)
+  const activeDCs = dcTotal - dcMaintenance; // DCs that should be operational
+  const healthPercent = activeDCs > 0 ? Math.round((dcOperational / activeDCs) * 100) : 100;
 
   // Determine overall status level
   const isHealthy = statusIndicator === 'none';
