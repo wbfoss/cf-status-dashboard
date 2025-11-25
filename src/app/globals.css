@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  /* NOC Dark Theme */
+  --noc-bg-primary: #0a0e14;
+  --noc-bg-secondary: #0d1117;
+  --noc-bg-card: #161b22;
+  --noc-bg-elevated: #1c2128;
+  --noc-border: #30363d;
+  --noc-border-light: #21262d;
+
+  /* Text */
+  --noc-text-primary: #f0f6fc;
+  --noc-text-secondary: #8b949e;
+  --noc-text-muted: #6e7681;
+
+  /* Status Colors */
+  --noc-operational: #3fb950;
+  --noc-operational-bg: rgba(63, 185, 80, 0.15);
+  --noc-degraded: #d29922;
+  --noc-degraded-bg: rgba(210, 153, 34, 0.15);
+  --noc-partial: #db6d28;
+  --noc-partial-bg: rgba(219, 109, 40, 0.15);
+  --noc-major: #f85149;
+  --noc-major-bg: rgba(248, 81, 73, 0.15);
+  --noc-maintenance: #58a6ff;
+  --noc-maintenance-bg: rgba(88, 166, 255, 0.15);
+
+  /* Accent */
+  --noc-accent: #f6821f;
+}
+
+@theme inline {
+  --color-background: var(--noc-bg-primary);
+  --color-foreground: var(--noc-text-primary);
+  --font-sans: var(--font-inter);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--noc-bg-primary);
+  color: var(--noc-text-primary);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--noc-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--noc-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--noc-text-muted);
+}
+
+/* Status pulse animation */
+@keyframes pulse-operational {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); }
+}
+
+@keyframes pulse-degraded {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(210, 153, 34, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(210, 153, 34, 0); }
+}
+
+@keyframes pulse-outage {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(248, 81, 73, 0); }
+}
+
+.pulse-operational {
+  animation: pulse-operational 2s infinite;
+}
+
+.pulse-degraded {
+  animation: pulse-degraded 2s infinite;
+}
+
+.pulse-outage {
+  animation: pulse-outage 1.5s infinite;
+}
+
+/* Grid pattern background */
+.noc-grid-bg {
+  background-image:
+    linear-gradient(rgba(48, 54, 61, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px);
+  background-size: 50px 50px;
+}

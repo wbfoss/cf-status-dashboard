@@ -1,42 +1,68 @@
 # Cloudflare Status Dashboard
 
-A real-time dashboard displaying Cloudflare service status, incidents, and scheduled maintenance.
+A professional NOC-style dashboard for monitoring Cloudflare infrastructure status in real-time.
 
 ## Features
 
-- **Real-time Status**: Shows overall Cloudflare system status
-- **Component Monitoring**: Displays status of all Cloudflare components
-- **Active Incidents**: Lists any ongoing incidents with updates
-- **Scheduled Maintenance**: Shows upcoming and active maintenance windows
-- **Auto-refresh**: Updates every 5 minutes automatically
-- **Manual Refresh**: Click the refresh button for immediate updates
-- **Responsive Design**: Works on desktop and mobile devices
+- **Real-time Status Monitoring** - Overall system status with visual indicators
+- **Component Grid** - Status of all Cloudflare services at a glance
+- **Active Incidents** - Live tracking of ongoing incidents with updates
+- **Scheduled Maintenance** - Upcoming and in-progress maintenance windows
+- **Auto-refresh** - Automatic updates every 5 minutes
+- **Manual Refresh** - Instant refresh button for on-demand updates
+- **NOC-style UI** - Professional dark theme optimized for monitoring displays
+- **Responsive Design** - Works on desktop and mobile devices
 
 ## Tech Stack
 
-- Pure HTML, CSS, and JavaScript (no frameworks)
-- Fetches data from [Cloudflare Status API](https://www.cloudflarestatus.com/api)
-- Static site - no server required
+- **Framework**: Next.js 16 with App Router
+- **Styling**: Tailwind CSS
+- **Data Fetching**: SWR for real-time updates
+- **API**: Cloudflare Status API
+- **Deployment**: Vercel (static)
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 
 ## Deployment
 
 ### Vercel (Recommended)
 
 1. Push to GitHub
-2. Import project in Vercel
-3. Deploy - no configuration needed
+2. Import project in [Vercel](https://vercel.com/new)
+3. Deploy - zero configuration required
 
-### Local Development
+## Project Structure
 
-```bash
-npx serve .
 ```
-
-Then open http://localhost:3000
-
-## API Reference
-
-See [understanding.md](./understanding.md) for complete Cloudflare Status API documentation.
+src/
+├── app/
+│   ├── layout.tsx      # Root layout with metadata
+│   ├── page.tsx        # Main dashboard page
+│   └── globals.css     # NOC theme styles
+├── components/
+│   ├── Header.tsx      # Navigation and refresh controls
+│   ├── StatusHero.tsx  # Large status indicator
+│   ├── MetricCard.tsx  # Metric display cards
+│   ├── ComponentsGrid.tsx    # Service status grid
+│   ├── IncidentsPanel.tsx    # Active incidents list
+│   └── MaintenancePanel.tsx  # Scheduled maintenance
+└── lib/
+    ├── api.ts          # SWR hooks and utilities
+    └── types.ts        # TypeScript definitions
+```
 
 ## License
 
