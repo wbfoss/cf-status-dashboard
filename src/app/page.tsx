@@ -80,14 +80,29 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer className="border-t py-4 mt-6" style={{ borderColor: 'var(--noc-border)' }}>
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex items-center justify-between text-xs" style={{ color: 'var(--noc-text-muted)' }}>
-          <span>
-            Source:{' '}
-            <a href="https://www.cloudflarestatus.com" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--noc-accent)' }}>
-              cloudflarestatus.com
-            </a>
-          </span>
-          <span>Auto-refresh: 1hr</span>
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs" style={{ color: 'var(--noc-text-muted)' }}>
+            <div className="flex items-center gap-4">
+              <span>
+                Source:{' '}
+                <a href="https://www.cloudflarestatus.com" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--noc-accent)' }}>
+                  cloudflarestatus.com
+                </a>
+              </span>
+              <span className="hidden sm:inline">•</span>
+              <span>
+                An open source project by{' '}
+                <a href="https://wbfoss.org" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--noc-accent)' }}>
+                  wbfoss.org
+                </a>
+              </span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="italic">Not affiliated with Cloudflare, Inc.</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Auto-refresh: 1hr</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
