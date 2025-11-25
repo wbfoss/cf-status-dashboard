@@ -121,40 +121,68 @@ export default function Globe3D({ components }: Globe3DProps) {
           globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
           bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
           backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-          // Points layer for data centers
-          pointsData={dataCenters}
-          pointLat="lat"
-          pointLng="lng"
-          pointAltitude="altitude"
-          pointColor="color"
-          pointRadius={0.3}
-          pointsMerge={false}
-          pointResolution={12}
-          // Hover interaction
-          onPointHover={(point: object | null) => setHoveredPoint(point as DataCenterPoint | null)}
           // Atmosphere
           atmosphereColor="#3a86ff"
           atmosphereAltitude={0.15}
-          // Custom rendering for glow effect
-          customLayerData={dataCenters.filter(dc => dc.status !== 'operational')}
+          // Custom spikes layer - thin light-emitting spikes
+          customLayerData={dataCenters}
           customThreeObject={(d: object) => {
-            // Create glowing spike for non-operational DCs
             const dc = d as DataCenterPoint;
             const THREE = require('three');
-            const geometry = new THREE.CylinderGeometry(0.3, 0.1, dc.altitude * 100, 8);
-            const material = new THREE.MeshBasicMaterial({
+
+            // Create a group to hold spike and glow
+            const group = new THREE.Group();
+
+            // Spike height based on status
+            const spikeHeight = dc.status === 'operational' ? 8 : 20;
+
+            // Main spike - very thin cone (sharp point)
+            const spikeGeometry = new THREE.ConeGeometry(0.15, spikeHeight, 8);
+            const spikeMaterial = new THREE.MeshBasicMaterial({
+              color: dc.color,
+              transparent: true,
+              opacity: 0.95,
+            });
+            const spike = new THREE.Mesh(spikeGeometry, spikeMaterial);
+            spike.position.y = spikeHeight / 2;
+            group.add(spike);
+
+            // Inner glow line for light effect
+            const glowGeometry = new THREE.CylinderGeometry(0.05, 0.05, spikeHeight * 0.9, 4);
+            const glowMaterial = new THREE.MeshBasicMaterial({
+              color: '#ffffff',
+              transparent: true,
+              opacity: 0.6,
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            glow.position.y = spikeHeight / 2;
+            group.add(glow);
+
+            // Base dot
+            const baseGeometry = new THREE.SphereGeometry(0.3, 8, 8);
+            const baseMaterial = new THREE.MeshBasicMaterial({
               color: dc.color,
               transparent: true,
               opacity: 0.9,
             });
-            const mesh = new THREE.Mesh(geometry, material);
-            mesh.rotation.x = Math.PI / 2;
-            return mesh;
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            group.add(base);
+
+            return group;
           }}
           customThreeObjectUpdate={(obj: any, d: object) => {
             const dc = d as DataCenterPoint;
-            Object.assign(obj.position, globeRef.current?.getCoords(dc.lat, dc.lng, dc.altitude / 2));
+            if (globeRef.current) {
+              const coords = globeRef.current.getCoords(dc.lat, dc.lng, 0);
+              if (coords) {
+                Object.assign(obj.position, coords);
+                // Orient spike to point outward from globe center
+                obj.lookAt(0, 0, 0);
+                obj.rotateX(Math.PI / 2);
+              }
+            }
           }}
+          onCustomLayerHover={(d: object | null) => setHoveredPoint(d as DataCenterPoint | null)}
         />
       )}
 
