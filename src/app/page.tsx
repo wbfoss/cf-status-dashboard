@@ -6,7 +6,7 @@ import {
   StatusHero,
   MetricCard,
   StatusChart,
-  ComponentsGrid,
+  WorldMap,
   IncidentsPanel,
   MaintenancePanel,
 } from '@/components';
@@ -30,10 +30,6 @@ export default function Dashboard() {
 
   const activeIncidents = incidents.filter(i =>
     ['investigating', 'identified', 'monitoring'].includes(i.status)
-  ).length;
-
-  const scheduledMaintenance = maintenances.filter(m =>
-    ['scheduled', 'in_progress', 'verifying'].includes(m.status)
   ).length;
 
   if (isError) {
@@ -103,9 +99,9 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Components */}
+        {/* World Map */}
         <section className="mb-5">
-          <ComponentsGrid components={components} />
+          <WorldMap components={components} />
         </section>
 
         {/* Incidents & Maintenance */}
